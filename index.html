@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сюрприз для Максима</title>
+    <style>
+        /* Яркие и светлые цвета */
+        body { 
+            margin: 0; padding: 0; 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            background-color: #fffafa; /* Светло-розовый фон */
+            color: #d81b60; /* Насыщенный розовый текст */
+            display: flex; justify-content: center; align-items: center; 
+            height: 100vh; overflow: hidden; text-align: center; 
+        }
+        .container { width: 90%; max-width: 500px; position: relative; padding: 20px; }
+        .screen { display: none; animation: fadeIn 0.6s ease forwards; }
+        .active { display: block; }
+        
+        h1 { font-size: 26px; line-height: 1.4; margin-bottom: 20px; }
+        p { color: #666; font-size: 18px; line-height: 1.6; margin: 15px 0; }
+        
+        /* Кнопки как на сайте для Кристины */
+        button { 
+            background: #f06292; color: white; 
+            border: none; padding: 15px 25px; 
+            font-size: 17px; border-radius: 30px; 
+            cursor: pointer; margin: 10px; transition: 0.3s; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+        }
+        button:hover { background: #e91e63; transform: scale(1.05); }
+
+        /* Интерактив: Провода (цвета яркие) */
+        .wire-container { display: flex; justify-content: space-around; margin: 30px 0; }
+        .wire { width: 15px; height: 80px; cursor: pointer; border-radius: 8px; transition: 0.3s; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        
+        /* Яркие цвета проводов */
+        .wire.red { background: #ff5252; }
+        .wire.blue { background: #448aff; }
+        .wire.yellow { background: #ffd740; } /* Ярко-желтый */
+        
+        /* Эффект разрезанного провода */
+        .wire.cut { height: 30px; opacity: 0.3; cursor: default; }
+
+        /* Поле ввода пароля */
+        input[type="text"] { 
+            background: #fff; border: 2px solid #f06292; 
+            color: #d81b60; text-align: center; padding: 12px; 
+            font-size: 20px; border-radius: 10px; width: 160px;
+            margin-bottom: 15px; outline: none;
+        }
+
+        /* Полоса загрузки (розовая) */
+        .loader { width: 100%; height: 15px; background: #eee; border-radius: 10px; margin-top: 20px; overflow: hidden; }
+        .progress { width: 0%; height: 100%; background: #f06292; transition: width 0.1s linear; }
+
+        /* Финальный экран */
+        .final-title { font-size: 32px; color: #c2185b; font-weight: bold; margin-bottom: 15px; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .final-text { font-size: 22px; color: #d81b60; line-height: 1.6; font-weight: bold; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="s1" class="screen active">
+            <h1>Привет, Максим! 👋</h1>
+            <p>У нас есть для тебя одна очень важная и замечательная новость...</p>
+            <p>Но сначала нужно пройти небольшую проверку! 😊</p>
+            <button onclick="next(2)">Я готов!</button>
+        </div>
+
+        <div id="s2" class="screen">
+            <h1>Задание 1: Цветной код</h1>
+            <p>Чтобы открыть секрет, нажми на **ЖЁЛТЫЙ** провод:</p>
+            <div class="wire-container">
+                <div class="wire red" onclick="alert('Ой! Не тот провод! Попробуй ещё раз! 😉')"></div>
+                <div class="wire yellow" id="target-wire" onclick="cutWire()"></div>
+                <div class="wire blue" onclick="alert('Упс! Мимо! Давай снова! 😉')"></div>
+            </div>
+        </div>
+
+        <div id="s3" class="screen">
+            <h1>Задание 2: Секретный код</h1>
+            <p>Введи код доступа (например, "123" или твой ДР):</p>
+            <input type="text" id="pass" placeholder="____" maxlength="6">
+            <br>
+            <button onclick="checkPass()">Проверить код</button>
+        </div>
+
+        <div id="s4" class="screen">
+            <h1>Получение данных... ✨</h1>
+            <div class="loader"><div id="pbar" class="progress"></div></div>
+            <p id="stat" style="color: #666;">0%</p>
+        </div>
+
+        <div id="s5" class="screen">
+            <h1 class="final-title">СЮРПРИЗ! ❤️</h1>
+            <p class="final-text">Максим, Ксения и Влад приготовили для тебя потрясающую новость!</p>
+            <p class="final-text" style="font-size: 26px; background: #fce4ec; padding: 15px; border-radius: 15px; display: inline-block; margin-top: 20px;">В СЕМЬЕ КСЮШИ И ВЛАДА БУДЕТ ПОПОЛНЕНИЕ!</p>
+            <p style="font-size: 20px; margin-top: 25px; color: #d81b60;">Ура! Поздравляем! 🎉</p>
+        </div>
+    </div>
+
+    <script>
+        // Функция переключения экранов
+        function next(n) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('s' + n).classList.add('active');
+        }
+
+        // Логика проводов
+        function cutWire() {
+            document.getElementById('target-wire').classList.add('cut');
+            setTimeout(() => next(3), 600);
+        }
+
+        // Логика пароля (любой текст сработает)
+        function checkPass() {
+            if(document.getElementById('pass').value !== "") {
+                next(4);
+                startLoad();
+            } else {
+                alert("Пожалуйста, введи код! 😉");
+            }
+        }
+
+        // Логика полосы загрузки
+        function startLoad() {
+            let p = 0;
+            const interval = setInterval(() => {
+                p += 2; // Скорость загрузки
+                document.getElementById('pbar').style.width = p + '%';
+                document.getElementById('stat').innerText = p + '%';
+                if(p >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => next(5), 500);
+                }
+            }, 50);
+        }
+    </script>
+</body>
+</html>
